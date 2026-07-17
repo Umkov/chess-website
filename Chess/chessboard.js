@@ -1,5 +1,7 @@
 let board = Array.from({ length: 8 }, () => Array(8).fill(null));  // create da board
 
+setupBoard();
+
 let turn = 'white'; // los variables
 let game = true;
 let selectedSquare = null;
@@ -66,41 +68,6 @@ const imageMap = {
     }
 };
 
- // give birth to the pieces
-
-board[7][0] = {type: 'rook', color: 'white', hasMoved: false}; 
-board[7][1] = {type: 'knight', color: 'white', hasMoved: false}; 
-board[7][2] = {type: 'bishop', color: 'white', hasMoved: false}; 
-board[7][3] = {type: 'queen', color: 'white', hasMoved: false}; 
-board[7][4] = {type: 'king', color: 'white', hasMoved: false};
-board[7][5] = {type: 'bishop', color: 'white', hasMoved: false}; 
-board[7][6] = {type: 'knight', color: 'white', hasMoved: false};
-board[7][7] = {type: 'rook', color: 'white', hasMoved: false}; 
-board[6][0] = {type: 'pawn', color: 'white', hasMoved: false}; 
-board[6][1] = {type: 'pawn', color: 'white', hasMoved: false}; 
-board[6][2] = {type: 'pawn', color: 'white', hasMoved: false}; 
-board[6][3] = {type: 'pawn', color: 'white', hasMoved: false}; 
-board[6][4] = {type: 'pawn', color: 'white', hasMoved: false};
-board[6][5] = {type: 'pawn', color: 'white', hasMoved: false}; 
-board[6][6] = {type: 'pawn', color: 'white', hasMoved: false};
-board[6][7] = {type: 'pawn', color: 'white', hasMoved: false}; 
-
-board[0][0] = {type: 'rook', color: 'black', hasMoved: false}; 
-board[0][1] = {type: 'knight', color: 'black', hasMoved: false}; 
-board[0][2] = {type: 'bishop', color: 'black', hasMoved: false}; 
-board[0][3] = {type: 'queen', color: 'black', hasMoved: false}; 
-board[0][4] = {type: 'king', color: 'black', hasMoved: false};
-board[0][5] = {type: 'bishop', color: 'black', hasMoved: false}; 
-board[0][6] = {type: 'knight', color: 'black', hasMoved: false};
-board[0][7] = {type: 'rook', color: 'black', hasMoved: false}; 
-board[1][0] = {type: 'pawn', color: 'black', hasMoved: false}; 
-board[1][1] = {type: 'pawn', color: 'black', hasMoved: false}; 
-board[1][2] = {type: 'pawn', color: 'black', hasMoved: false}; 
-board[1][3] = {type: 'pawn', color: 'black', hasMoved: false}; 
-board[1][4] = {type: 'pawn', color: 'black', hasMoved: false};
-board[1][5] = {type: 'pawn', color: 'black', hasMoved: false}; 
-board[1][6] = {type: 'pawn', color: 'black', hasMoved: false};
-board[1][7] = {type: 'pawn', color: 'black', hasMoved: false}; 
 
 const canvas = document.getElementById("chessboard"); // so you can actually see the board
 const ctx = canvas.getContext("2d");
@@ -109,7 +76,63 @@ const squareSize = canvas.width / 8;
 const lightColor = '#edd6b0'
 const darkColor = '#b88762'
 
+const turnText = document.getElementById("turnText");
+
 // draweth
+
+function setupBoard() {
+    board = Array.from({ length: 8 }, () => Array(8).fill(null));
+
+    const backRank = [
+        "rook",
+        "knight",
+        "bishop",
+        "queen",
+        "king",
+        "bishop",
+        "knight",
+        "rook"
+    ];
+
+    for (let col = 0; col < 8; col++) {
+
+        board[7][col] = {
+            type: backRank[col],
+            color: "white",
+            hasMoved: false
+        };
+
+        board[6][col] = {
+            type: "pawn",
+            color: "white",
+            hasMoved: false
+        };
+
+        board[0][col] = {
+            type: backRank[col],
+            color: "black",
+            hasMoved: false
+        };
+
+        board[1][col] = {
+            type: "pawn",
+            color: "black",
+            hasMoved: false
+        };
+    }
+}
+
+function resetBoard() {
+    setupBoard();
+
+    turn = "white";
+    game = true;
+
+    selectedSquare = null;
+    shownMoves = [];
+    updateTurnText();
+    gameUpdate();
+}
 
 function drawBoard() {
     for (let i = 0; i < 8; i++) {
@@ -889,6 +912,229 @@ function getLegalMoves(board, row, col) {
     });
 }
 
+function hasAnyLegalMoves(board, color) {
+    for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+            const piece = board[row][col];
+
+            if (
+                piece !== null &&
+                piece.color === color
+            ) {
+                const legalMoves = getLegalMoves(
+                    board,
+                    row,
+                    col
+                );
+
+                if (legalMoves.length > 0) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+function isCheckmate(board, color) {
+    return (
+        isKingInCheck(board, color) &&
+        !hasAnyLegalMoves(board, color)
+    );
+}
+
+function isStalemate(board, color) {
+    return (
+        !isKingInCheck(board, color) &&
+        !hasAnyLegalMoves(board, color)
+    );
+}
+
+function updateTurnText() {
+    if (isCheckmate(board, turn)) {
+        const winner =
+            turn === "white" ? "Black" : "White";
+
+        turnText.textContent =
+            `${winner} wins by checkmate`;
+
+        game = false;
+        return;
+    }
+
+    if (isStalemate(board, turn)) {
+        turnText.textContent =
+            "Draw by stalemate";
+
+        game = false;
+        return;
+    }
+
+    turnText.textContent =
+        turn === "white"
+            ? "White to move"
+            : "Black to move";
+}
+
+function loadFEN(fen) {
+    const parts = fen.trim().split(/\s+/);
+
+    if (parts.length < 2) {
+        console.error("Invalid FEN.");
+        return false;
+    }
+
+    const positionPart = parts[0];
+    const activeColor = parts[1];
+    const castlingRights = parts[2] ?? "-";
+
+    const rows = positionPart.split("/");
+
+    if (rows.length !== 8) {
+        console.error("Invalid FEN: must contain 8 rows.");
+        return false;
+    }
+
+    const newBoard = Array.from(
+        { length: 8 },
+        () => Array(8).fill(null)
+    );
+
+    const pieceTypes = {
+        p: "pawn",
+        n: "knight",
+        b: "bishop",
+        r: "rook",
+        q: "queen",
+        k: "king"
+    };
+
+    for (let row = 0; row < 8; row++) {
+        let col = 0;
+
+        for (const character of rows[row]) {
+            if (character >= "1" && character <= "8") {
+                col += Number(character);
+                continue;
+            }
+
+            const lowercase = character.toLowerCase();
+            const type = pieceTypes[lowercase];
+
+            if (!type || col >= 8) {
+                console.error("Invalid FEN piece placement.");
+                return false;
+            }
+
+            const color =
+                character === character.toUpperCase()
+                    ? "white"
+                    : "black";
+
+            newBoard[row][col] = {
+                type,
+                color,
+                hasMoved: true
+            };
+
+            col++;
+        }
+
+        if (col !== 8) {
+            console.error(`Invalid FEN row ${row + 1}.`);
+            return false;
+        }
+    }
+
+    board = newBoard;
+
+    turn = activeColor === "b"
+        ? "black"
+        : "white";
+
+    applyFenCastlingRights(castlingRights);
+
+    selectedSquare = null;
+    shownMoves = [];
+    game = true;
+
+    updateTurnText();
+    gameUpdate();
+
+    return true;
+}
+
+function applyFenCastlingRights(castlingRights) {
+    const whiteKing = board[7][4];
+    const blackKing = board[0][4];
+
+    if (
+        whiteKing !== null &&
+        whiteKing.type === "king" &&
+        whiteKing.color === "white"
+    ) {
+        whiteKing.hasMoved =
+            !castlingRights.includes("K") &&
+            !castlingRights.includes("Q");
+    }
+
+    if (
+        blackKing !== null &&
+        blackKing.type === "king" &&
+        blackKing.color === "black"
+    ) {
+        blackKing.hasMoved =
+            !castlingRights.includes("k") &&
+            !castlingRights.includes("q");
+    }
+
+    setFenRookMovement(
+        7,
+        7,
+        "white",
+        castlingRights.includes("K")
+    );
+
+    setFenRookMovement(
+        7,
+        0,
+        "white",
+        castlingRights.includes("Q")
+    );
+
+    setFenRookMovement(
+        0,
+        7,
+        "black",
+        castlingRights.includes("k")
+    );
+
+    setFenRookMovement(
+        0,
+        0,
+        "black",
+        castlingRights.includes("q")
+    );
+}
+
+function setFenRookMovement(
+    row,
+    col,
+    color,
+    mayCastle
+) {
+    const rook = board[row][col];
+
+    if (
+        rook !== null &&
+        rook.type === "rook" &&
+        rook.color === color
+    ) {
+        rook.hasMoved = !mayCastle;
+    }
+}
+
 function gameUpdate() {
     drawBoard();
     drawCheckedKing();
@@ -940,6 +1186,7 @@ canvas.addEventListener("click", event => {
         }
 
         gameUpdate();
+        updateTurnText();
         return;
     }
 
@@ -963,4 +1210,22 @@ canvas.addEventListener("click", event => {
     gameUpdate();
 });
 
+document
+    .getElementById("resetBtn")
+    .addEventListener("click", resetBoard);
+
+const fenInput = document.getElementById("fenInput");
+const loadFenBtn = document.getElementById("loadFenBtn");
+
+loadFenBtn.addEventListener("click", () => {
+    const fen = fenInput.value;
+
+    if (loadFEN(fen)) {
+        console.log("FEN loaded successfully.");
+    } else {
+        alert("That FEN is invalid.");
+    }
+});
+
 gameUpdate();
+updateTurnText();

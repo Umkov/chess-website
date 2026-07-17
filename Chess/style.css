@@ -24,6 +24,13 @@ main {
     justify-content: center;
 }
 
+#moveList {
+    background-color: rgb(179, 178, 178);
+    border: 3px rgb(39, 39, 39) solid;
+    border-radius: 10px;
+    width: 200px;
+}
+
 #chessboard { 
     margin: 30px;
     width: 640px;

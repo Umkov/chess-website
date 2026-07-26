@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess</title>
+    <link rel="icon" type="image/png" href="images/chesswebicon.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Chess</h1>
+    </header>
+
+    <main>
+        <div id="moveList"></div>
+        <canvas id="chessboard" width="640" height="640"></canvas>
+        <div class="buttonList">
+            <h2 id="turnText">White to move</h2>
+            <button id="resetBtn">Reset Game</button>
+            <textarea
+                id="fenInput"
+                rows="3"
+                cols="70"
+                placeholder="Paste FEN here"
+            ></textarea>
+            <button id="loadFenBtn">Load FEN</button>
+        </div>
+    </main>
+
+    <footer>
+
+    </footer>
+    <script src="chessboard.js" defer></script>
+</body>
+</html>

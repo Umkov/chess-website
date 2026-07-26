@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+* {
+    font-family: "Lato", sans-serif;
+    padding: 0;
+    margin: 0;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: lemonchiffon;
+    padding: 1%;
+}
+
+h1 { 
+    font-size: 50px;
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#moveList {
+    background-color: rgb(179, 178, 178);
+    border: 3px rgb(39, 39, 39) solid;
+    border-radius: 10px;
+    width: 200px;
+}
+
+#chessboard { 
+    margin: 30px;
+    width: 640px;
+    height: 640px;
+}
+
+.buttonList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    
+    justify-content: space-around;
+    align-items: start;
+}
+
+#turnText {
+    font-size: 40px;
+    width: 300px;
+}
+
+#fenInput {
+    height: 200px;
+    width: 500px;
+    border: 3px rgb(39, 39, 39) solid;
+    border-radius: 10px;
+    background-color: rgb(179, 178, 178);
+    padding: 0;
+    margin: 0;
+    font-size: 18px;
+    
+}
+
+#fenInput::placeholder {
+    font-size: 30px;
+}
+
+button {
+    background-color: rgb(179, 178, 178);
+    border: 3px rgb(39, 39, 39) solid;
+    border-radius: 10px;
+    min-width: 450px;
+    min-height: 100px;
+    margin: 20px;
+    font-size: 30px;
+}
